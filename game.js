@@ -245,7 +245,7 @@ class DragonGroup {
         }
         
         // For 7-10, use two dice side by side
-        const diceGap = spacing * 1.5;
+        const diceGap = spacing * 2;
         if (count === 7) {
             // 3 + 4
             const left = dicePatterns[3].map(p => ({x: p.x - diceGap/2, y: p.y}));
