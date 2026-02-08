@@ -26,11 +26,13 @@ body {
 }
 
 #gameCanvas {
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
     display: block;
     background: transparent;
     touch-action: none;
-    z-index: 5;
+    z-index: 2;
 }
 
 .ui-overlay {
@@ -164,6 +166,7 @@ body {
     z-index: 15;
     opacity: 0;
     text-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+    white-space: pre-line;
 }
 
 .round-message.show-success {
@@ -229,4 +232,39 @@ body {
 .play-again-btn:hover {
     background: #9B30FF;
     box-shadow: 0 0 30px #9B30FF, 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 600px) {
+    .target-number {
+        font-size: 80px;
+        top: 20px;
+    }
+    .score {
+        font-size: 22px;
+        top: 20px;
+        right: 20px;
+    }
+    .timer {
+        font-size: 20px;
+        top: 55px;
+        right: 20px;
+    }
+    .lives {
+        font-size: 24px;
+        top: 20px;
+        left: 20px;
+    }
+    .round-message {
+        font-size: 40px;
+    }
+    .game-over-title {
+        font-size: 50px;
+    }
+    .game-over-score {
+        font-size: 32px;
+    }
+    .play-again-btn {
+        font-size: 28px;
+        padding: 12px 40px;
+    }
 }

@@ -960,6 +960,10 @@ function handleShooting() {
 window.addEventListener('resize', () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    if (game.unicorn) {
+        game.unicorn.x = canvas.width / 2;
+        game.unicorn.y = canvas.height / 2;
+    }
 });
 
 // Initialize game
