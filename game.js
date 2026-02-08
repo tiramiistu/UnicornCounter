@@ -31,7 +31,9 @@ const game = {
     fadeProgress: 0,
     isFading: false,
     gameOver: false,
-    roundOver: false
+    roundOver: false,
+    shotCounter: 0,
+    processedShots: new Set()
 };
 
 // Unicorn (player)
@@ -581,6 +583,7 @@ function createDragonGroups() {
     game.timeRemaining = 20;
     game.lastTime = Date.now();
     game.roundOver = false;
+    game.processedShots.clear();
     
     const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     const numGroups = Math.min(3 + Math.floor(game.score / 50), 5);
@@ -611,10 +614,13 @@ function createDragonGroups() {
 
 // Shoot rainbow dust (spray of particles)
 function shootRainbowDust() {
+    game.shotCounter++;
+    const shotId = game.shotCounter;
     // Shoot 3 particles in a small spread for better coverage
     for (let i = -1; i <= 1; i++) {
         const spreadAngle = game.unicorn.angle + (i * 0.1);
         const dust = new RainbowDust(game.unicorn.x, game.unicorn.y, spreadAngle);
+        dust.shotId = shotId;
         game.rainbowDust.push(dust);
     }
 }
@@ -849,10 +855,11 @@ function gameLoop() {
         dust.update();
         dust.draw();
         
-        // Check collisions with groups
-        if (!game.showingRainbow && !game.isFading) {
+        // Check collisions with groups (only one hit per shot)
+        if (!game.showingRainbow && !game.isFading && !game.roundOver) {
             game.dragonGroups.forEach(group => {
-                if (!group.isHeart && group.checkCollision(dust)) {
+                if (!group.isHeart && !game.processedShots.has(dust.shotId) && group.checkCollision(dust)) {
+                    game.processedShots.add(dust.shotId);
                     checkGroupHit(group);
                     dust.life = 0;
                 }
