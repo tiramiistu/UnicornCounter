@@ -245,7 +245,7 @@ class DragonGroup {
         }
         
         // For 7-10, use two dice side by side
-        const diceGap = spacing * 3;
+        const diceGap = spacing * 1.5;
         if (count === 7) {
             // 3 + 4
             const left = dicePatterns[3].map(p => ({x: p.x - diceGap/2, y: p.y}));
@@ -866,27 +866,39 @@ canvas.addEventListener('mouseup', () => {
     isMouseDown = false;
 });
 
-// Touch controls for mobile
+// Touch controls for mobile - tap to select a cluster directly
 canvas.addEventListener('touchstart', (e) => {
     e.preventDefault();
+    if (game.showingRainbow || game.isFading || game.gameOver || game.roundOver) return;
+
     const touch = e.touches[0];
-    mouseX = touch.clientX;
-    mouseY = touch.clientY;
+    const tapX = touch.clientX;
+    const tapY = touch.clientY;
+
+    // Update unicorn to face tap position
+    mouseX = tapX;
+    mouseY = tapY;
     game.unicorn.update(mouseX, mouseY);
-    isMouseDown = true;
+
+    // Check if tap landed on a dragon group
+    for (const group of game.dragonGroups) {
+        if (group.isHeart) continue;
+        const dx = tapX - group.centerX;
+        const dy = tapY - group.centerY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < group.boundingRadius) {
+            checkGroupHit(group);
+            return;
+        }
+    }
 });
 
 canvas.addEventListener('touchmove', (e) => {
     e.preventDefault();
-    const touch = e.touches[0];
-    mouseX = touch.clientX;
-    mouseY = touch.clientY;
-    game.unicorn.update(mouseX, mouseY);
 });
 
 canvas.addEventListener('touchend', (e) => {
     e.preventDefault();
-    isMouseDown = false;
 });
 
 // Auto-shoot when mouse/touch is held down
