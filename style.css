@@ -46,14 +46,23 @@ body {
     position: absolute;
     top: 40px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) scale(0);
     font-size: 120px;
     font-weight: bold;
     color: #790ECB;
     text-shadow: 0 0 20px #790ECB, 0 0 40px #790ECB;
-    animation: pulse 2s ease-in-out infinite;
     z-index: 1;
     pointer-events: none;
+    opacity: 0;
+    transition: none;
+}
+
+.target-number.pop-in {
+    animation: popIn 0.5s ease-out forwards, pulse 2s ease-in-out 0.5s infinite;
+}
+
+.target-number.fade-out {
+    animation: fadeOut 0.4s ease-in forwards;
 }
 
 .score {
@@ -89,4 +98,135 @@ body {
     50% {
         transform: translateX(-50%) scale(1.1);
     }
+}
+
+@keyframes popIn {
+    0% {
+        transform: translateX(-50%) scale(0);
+        opacity: 0;
+    }
+    70% {
+        transform: translateX(-50%) scale(1.3);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(-50%) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    0% {
+        transform: translateX(-50%) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(-50%) scale(0.5);
+        opacity: 0;
+    }
+}
+
+@keyframes messageIn {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+    70% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes messageOut {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+}
+
+.round-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    font-size: 64px;
+    font-weight: bold;
+    text-align: center;
+    pointer-events: none;
+    z-index: 15;
+    opacity: 0;
+    text-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+}
+
+.round-message.show-success {
+    color: #00FF88;
+    animation: messageIn 0.4s ease-out forwards;
+}
+
+.round-message.show-fail {
+    color: #FF4444;
+    animation: messageIn 0.4s ease-out forwards;
+}
+
+.round-message.hide {
+    animation: messageOut 0.3s ease-in forwards;
+}
+
+.game-over-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(10, 10, 10, 0.9);
+    z-index: 20;
+}
+
+.game-over-screen.visible {
+    display: flex;
+}
+
+.game-over-title {
+    font-size: 80px;
+    font-weight: bold;
+    color: #FF4444;
+    text-shadow: 0 0 30px #FF4444, 0 0 60px #FF4444;
+    margin-bottom: 30px;
+}
+
+.game-over-score {
+    font-size: 48px;
+    color: #FFD700;
+    text-shadow: 0 0 15px #FFD700;
+    margin-bottom: 50px;
+}
+
+.play-again-btn {
+    font-size: 36px;
+    padding: 15px 50px;
+    background: #790ECB;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 20px #790ECB, 0 5px 15px rgba(0, 0, 0, 0.5);
+    pointer-events: auto;
+}
+
+.play-again-btn:hover {
+    background: #9B30FF;
+    box-shadow: 0 0 30px #9B30FF, 0 5px 15px rgba(0, 0, 0, 0.5);
 }

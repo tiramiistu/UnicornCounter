@@ -2,6 +2,13 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const targetNumberEl = document.getElementById('targetNumber');
 const scoreEl = document.getElementById('score');
+const roundMessageEl = document.getElementById('roundMessage');
+const gameOverScreen = document.getElementById('gameOverScreen');
+const gameOverScoreEl = document.getElementById('gameOverScore');
+const playAgainBtn = document.getElementById('playAgainBtn');
+
+const SUCCESS_MESSAGES = ['Amazing!', 'Well Done!', 'Awesome!', 'Fantastic!', 'Brilliant!', 'Super!', 'Great Job!'];
+const FAIL_MESSAGES_FN = (lives) => `Try Again!\n${lives} ${lives === 1 ? 'life' : 'lives'} left`;
 
 // Set canvas size
 canvas.width = window.innerWidth;
@@ -15,7 +22,7 @@ const game = {
     dragonGroups: [],
     particles: [],
     rainbowDust: [],
-    lives: 3,
+    lives: 5,
     shotsRemaining: 2,
     timeRemaining: 10,
     lastTime: Date.now(),
@@ -550,6 +557,23 @@ class Particle {
     }
 }
 
+function showRoundMessage(text, isSuccess) {
+    roundMessageEl.textContent = text;
+    roundMessageEl.className = 'round-message ' + (isSuccess ? 'show-success' : 'show-fail');
+}
+
+function hideRoundMessage() {
+    roundMessageEl.className = 'round-message hide';
+}
+
+function popInTargetNumber() {
+    targetNumberEl.className = 'target-number pop-in';
+}
+
+function fadeOutTargetNumber() {
+    targetNumberEl.className = 'target-number fade-out';
+}
+
 // Create dragon groups
 function createDragonGroups() {
     game.dragonGroups = [];
@@ -570,6 +594,8 @@ function createDragonGroups() {
     
     game.targetNumber = selectedNumbers[Math.floor(Math.random() * selectedNumbers.length)];
     targetNumberEl.textContent = game.targetNumber;
+    popInTargetNumber();
+    hideRoundMessage();
     
     selectedNumbers.forEach((count, groupId) => {
         const angle = (groupId / numGroups) * Math.PI * 2;
@@ -607,18 +633,21 @@ function checkGroupHit(group) {
         scoreEl.textContent = `Score: ${game.score}`;
 
         game.dragonGroups.forEach(g => g.turnToHearts());
+        fadeOutTargetNumber();
+        const msg = SUCCESS_MESSAGES[Math.floor(Math.random() * SUCCESS_MESSAGES.length)];
+        showRoundMessage(msg, true);
 
         // Show rainbow animation
         game.showingRainbow = true;
         game.rainbowProgress = 0;
-        
+
         // After 1 second, start fade
         setTimeout(() => {
             game.showingRainbow = false;
             game.isFading = true;
             game.fadeProgress = 0;
         }, 1000);
-        
+
         // After 3 seconds total (1s rainbow + 2s fade), start new round
         setTimeout(() => {
             game.isFading = false;
@@ -641,14 +670,15 @@ function checkGroupHit(group) {
             game.roundOver = true;
             game.lives--;
             updateLivesDisplay();
-            
+            fadeOutTargetNumber();
+
             if (game.lives <= 0) {
                 gameOver();
             } else {
-                // Lost a life, start new round
+                showRoundMessage(FAIL_MESSAGES_FN(game.lives), false);
                 setTimeout(() => {
                     createDragonGroups();
-                }, 1000);
+                }, 2000);
             }
         }
     }
@@ -656,18 +686,23 @@ function checkGroupHit(group) {
 
 function gameOver() {
     game.gameOver = true;
-    targetNumberEl.textContent = 'GAME OVER';
+    fadeOutTargetNumber();
+    hideRoundMessage();
+    gameOverScoreEl.textContent = `Final Score: ${game.score}`;
     setTimeout(() => {
-        if (confirm(`Game Over! Final Score: ${game.score}\n\nPlay Again?`)) {
-            game.score = 0;
-            game.lives = 3;
-            game.gameOver = false;
-            scoreEl.textContent = `Score: ${game.score}`;
-            updateLivesDisplay();
-            createDragonGroups();
-        }
-    }, 100);
+        gameOverScreen.classList.add('visible');
+    }, 500);
 }
+
+playAgainBtn.addEventListener('click', () => {
+    game.score = 0;
+    game.lives = 5;
+    game.gameOver = false;
+    scoreEl.textContent = 'Score: 0';
+    updateLivesDisplay();
+    gameOverScreen.classList.remove('visible');
+    createDragonGroups();
+});
 
 function updateLivesDisplay() {
     const livesEl = document.getElementById('lives');
@@ -691,13 +726,15 @@ function updateTimer() {
         game.roundOver = true;
         game.lives--;
         updateLivesDisplay();
+        fadeOutTargetNumber();
 
         if (game.lives <= 0) {
             gameOver();
         } else {
+            showRoundMessage(FAIL_MESSAGES_FN(game.lives), false);
             setTimeout(() => {
                 createDragonGroups();
-            }, 1000);
+            }, 2000);
         }
     }
 }
