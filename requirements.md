@@ -12,106 +12,124 @@ Rainbow Counting Adventure is a fast-paced educational counting game where playe
 - Horn is angled forward at 25 degrees for visual appeal
 
 ### Controls
-- **Mouse**: Move mouse to aim, hold down to shoot rainbow dust
-- **Touch**: Touch and drag to aim, hold to shoot (mobile-friendly)
-- **Auto-fire**: Continuous shooting while mouse/touch is held down with cooldown between shots
+- **Mouse (Desktop)**: Move mouse to aim, hold down to shoot rainbow dust with auto-fire
+- **Touch (Mobile)**: Tap directly on a dragon cluster to select it
+- Mobile uses tap-to-select to avoid accidentally hitting wrong clusters en route
 
 ### Enemies
 - **Dragon Groups**: Groups of 1-10 dragons arranged in dice patterns
-- Dragons are purple with red eyes, horns, and animated fire breath
+- Each group has a distinct colour (purple, red, green, blue, orange, gold, pink, sea green, indigo, slate)
 - Groups move together as a single unit across the screen
-- Groups bounce off screen edges to stay visible
+- Groups bounce off screen edges and off each other to prevent overlapping
 - Number of groups increases with score (3-5 groups maximum)
 
-### Shooting Mechanics
+### Shooting Mechanics (Desktop)
 - **Rainbow Dust**: Colorful projectiles with glow effects
-- Shoots 3 particles in a small spread for better hit detection
+- Shoots 3 particles in a small spread per shot (one hit registered per shot)
 - Limited to 2 shots per round
 - Particles have rainbow hue variations and trailing effects
 
 ## Game Rules
 
 ### Objective
-- A target number (1-10) is displayed at the top center of the screen
-- Player must shoot the dragon group that matches the target number
-- Each round has a 10-second time limit
+- A target number (1-10) is displayed at the top centre of the screen (behind dragon clusters)
+- Player must shoot/tap the dragon group that matches the target number
+- Each round has a 20-second time limit
 
 ### Scoring System
-- **Correct Hit**: Base score = (remaining time in seconds) + (dragon count × 10)
+- **Correct Hit**: Base score = (remaining time in seconds) + (dragon count x 10)
 - Score accumulates across rounds
 - Higher scores unlock more dragon groups (increased difficulty)
 
 ### Lives System
-- Player starts with 3 lives (displayed as hearts)
+- Player starts with 5 lives (displayed as hearts)
 - Lose a life when:
   - Shooting the wrong dragon group and running out of shots
   - Time runs out before hitting the correct group
 - Game over when all lives are lost
 
 ### Round Progression
-1. Dragon groups spawn in circular formation around the center
-2. Target number is randomly selected from available groups
-3. Player has 2 shots and 10 seconds to hit the correct group
-4. **Correct hit**: Rainbow animation plays, dragons turn into floating hearts, new round starts after 3 seconds
+1. Dragon groups spawn in circular formation around the centre
+2. Target number pops in with scale animation
+3. Player has 2 shots and 20 seconds to hit the correct group
+4. **Correct hit**: Success message (e.g. "Amazing!", "Well Done!"), rainbow animation, dragons turn into floating hearts, new round starts after 3 seconds
 5. **Wrong hit**: Red particle explosion, lose remaining shots if any
-6. **Out of shots or time**: Lose a life, new round starts after 1 second
+6. **Out of shots or time**: Fail message with lives remaining shown, lose a life, new round starts after 2 seconds
+
+### Round Transitions
+- Target number pops in at round start, fades out at round end
+- Success rounds show random congratulations in bright green
+- Failed rounds show "Try Again! X lives left" in red
 
 ## Visual Design
 
-### Color Scheme (Kiro Brand Colors)
-- **Primary Purple (#790ECB)**: Target number display, accents
+### Colour Scheme
+- **Primary Purple (#790ECB)**: Target number display, Play Again button, accents
 - **Dark Background (#0a0a0a)**: Main background
 - **Gradient Background**: Dark purple (#1a0a2e) to black
 - **Rainbow Effects**: Full spectrum for mane, dust, and victory animation
 
 ### Visual Effects
-- **Rainbow Dust**: Colorful particles with glow and shadow effects
+- **Rainbow Dust**: Colourful particles with glow and shadow effects
 - **Victory Rainbow**: Full-screen rainbow arc animation on correct hits
 - **Heart Transformation**: Dragons fade into pink hearts that float upward
 - **Particle Explosions**: Gold particles on correct hits, red on wrong hits
-- **Pulsing Target Number**: Animated scale effect for emphasis
+- **Pop-in Target Number**: Animated scale-up effect at round start
 - **Fire Breath**: Animated orange/gold flames from dragon nostrils
 
 ### UI Elements
-- **Target Number**: Large (120px), centered at top, purple with glow
+- **Target Number**: Large, centred at top, purple with glow (behind game canvas)
 - **Score**: Top right, white text with shadow
 - **Timer**: Below score, gold text showing countdown
 - **Lives**: Top left, heart emoji display
+- **Round Messages**: Centre screen, success (green) or fail (red)
+- **Game Over Screen**: Overlay with final score and Play Again button
 
 ## Technical Features
 
 ### Responsive Design
 - Canvas fills entire viewport
-- Handles window resize events
-- Touch-optimized for mobile devices
-- Prevents text selection and default touch behaviors
+- Handles window resize events with unicorn re-centring
+- Touch-optimised for mobile devices (tap-to-select)
+- Responsive font sizes for smaller screens
+- Prevents text selection and default touch behaviours
 
 ### Animation & Performance
 - 60 FPS target using requestAnimationFrame
 - Smooth sprite rotations and movements
 - Particle system for visual feedback
 - Fade transitions between rounds
+- CSS animations for pop-in, fade-out, and message displays
 
 ### Dragon Group Patterns
 - **1-6 dragons**: Standard dice patterns
-- **7-10 dragons**: Two dice side by side
+- **7-10 dragons**: Two dice side by side (close spacing)
   - 7 = 3 + 4
   - 8 = 4 + 4
   - 9 = 4 + 5
   - 10 = 5 + 5
-- Spacing ensures dragons don't overlap (50px spacing, 20px dragon size)
+- 50px spacing within dice, 100px gap between paired dice
+- Dragon size is 20px
 
 ### Collision Detection
-- Circular collision between rainbow dust and dragons
-- Checks all dragons in a group for hits
+- **Desktop**: Circular collision between rainbow dust and dragons (one hit per shot via shotId tracking)
+- **Mobile**: Tap within group bounding radius to select
+- Groups bounce off each other using circle-based collision with elastic velocity reflection
 - Prevents multiple hits during victory animation
+
+### PWA Support
+- Web app manifest for Add to Home Screen
+- Apple touch icon (180px) and Android icons (192px, 512px)
+- SVG favicon
+- Standalone display mode
+- Theme colour matching game background
 
 ## Game States
 
 ### Active Play
 - Timer counting down
-- Dragons moving
-- Player can shoot
+- Dragons moving and bouncing
+- Player can shoot/tap
 - Collision detection active
 
 ### Victory Animation
@@ -121,9 +139,9 @@ Rainbow Counting Adventure is a fast-paced educational counting game where playe
 - New round starts automatically
 
 ### Game Over
-- Display final score
-- Prompt to play again
-- Reset score, lives, and game state on restart
+- Styled overlay with "GAME OVER" title
+- Final score displayed
+- Play Again button resets score, lives, and game state
 
 ## Difficulty Scaling
 - **Score 0-49**: 3 dragon groups
@@ -131,12 +149,9 @@ Rainbow Counting Adventure is a fast-paced educational counting game where playe
 - **Score 100+**: 5 dragon groups (maximum)
 - More groups = more choices = harder to identify correct target
 
-## Accessibility Considerations
-- Large, clear target number display
-- High contrast UI elements
-- Visual feedback for all actions
-- Touch-friendly controls for mobile
-- No time pressure option could be added for accessibility
+## Deployment
+- Hosted on AWS S3 with CloudFront CDN
+- Static site (HTML, CSS, JS only - no server required)
 
 ## Future Enhancement Ideas
 - Power-ups (extra time, extra shots, slow motion)
